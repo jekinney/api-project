@@ -21,8 +21,9 @@ trait UserTokens
 
         }
 
-        $user = $request->user()->load( 'roles' );
 
+        $user = auth()->user()->load( 'roles' );
+        
         $tokenResult = $user->createToken('Personal Access Token');
 
         $token = $tokenResult->token;

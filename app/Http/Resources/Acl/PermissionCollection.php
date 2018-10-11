@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Acl;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class RoleCollection extends ResourceCollection
+class PermissionCollection extends ResourceCollection
 {
     /**
      * Transform the resource collection into an array.
@@ -15,7 +15,7 @@ class RoleCollection extends ResourceCollection
     public function toArray($request)
     {
         return [
-            'roles' => RoleResource::collection( $this->collection ),
+            'permisisons' => PermissionResource::collection( $this->collection ),
         ];
     }
 }

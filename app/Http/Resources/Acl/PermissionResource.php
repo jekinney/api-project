@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Acl;
 
 use Illuminate\Http\Resources\Json\Resource;
 
-class RoleResource extends Resource
+class PermissionResource extends Resource
 {
     /**
      * Transform the resource into an array.
@@ -14,15 +14,14 @@ class RoleResource extends Resource
      */
     public function toArray($request)
     {
+        //dd( $this->uniqueRolesCount() );
 
         return [
             'id' => $this->id,
-            'name' => $this->when( $this->name, $this->name ),
             'slug' => $this->when( $this->slug, $this->slug ),
+            'name' => $this->when( $this->name, $this->name ),
             'description' => $this->when( $this->description, $this->description ),
-
-            //'users' => new UserCollection( $this->whenLoaded('users') ),
-            'permissions' => PermissionResource::collection( $this->whenLoaded('permissions') ),
+            'roles_count' => $this->when( $this->roles_count, $this->roles_count ),
         ];
     }
 }

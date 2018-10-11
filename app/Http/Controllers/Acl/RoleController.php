@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Acl;
 
-use App\Role;
+use App\Acl\Role;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
-use App\Http\Resources\{
+use App\Http\Resources\Acl\{
     RoleResource,
     RoleCollection
 };

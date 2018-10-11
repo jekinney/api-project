@@ -1,7 +1,7 @@
 <?php
 
 namespace App;
-use App\Http\Resources\PermissionResource;
+
 use App\Traits\UserTokens;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
@@ -23,7 +23,7 @@ class User extends Authenticatable
     */
     public function roles()
     {
-    	return $this->belongsToMany( Role::class )->withTimestamps();
+    	return $this->belongsToMany( \App\Acl\Role::class )->withTimestamps();
     }
 
     /**
@@ -31,7 +31,7 @@ class User extends Authenticatable
     */
     public function limitedRoles()
     {
-        return $this->belongsToMany( Role::class )->withTimestamps()->select('id', 'slug');
+        return $this->belongsToMany( \App\Acl\Role::class )->withTimestamps()->select('id', 'slug');
     }
 
     /**

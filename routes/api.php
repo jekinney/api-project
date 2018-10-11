@@ -32,17 +32,10 @@ Route::prefix('auth')->group( function () {
         Route::post('logout', 'AuthController@logout');
         Route::get('user', 'AuthController@user');
     });
+});
 
-    Route::prefix('page')->group( function() {
-    	Route::get('/', 'PageController@index');
-    	Route::get('/{page}', 'PageController@show');
-    	Route::get('/create', 'PageController@create');
-    	Route::put('/update/{post}', 'PageController@update');
-    	Route::post('/store', 'PageController@store');
-    	Route::delete('/destroy/{post}', 'PageController@destroy');
-    });
-
-    Route::prefix('role')->middleware('auth:api')->group( function() {
+Route::prefix('dash')->middleware(['auth:api', 'permission:access-dash'])->group( function() {
+    Route::prefix('role')->namespace('Acl')->middleware(['permission:acl-roles'])->group( function() {
         Route::get('/list/full', 'RoleController@full');
         Route::get('/list/select', 'RoleController@select');
         Route::get('/show/{identifier}', 'RoleController@show');
@@ -51,7 +44,7 @@ Route::prefix('auth')->group( function () {
         Route::delete('/destroy/{identifier}', 'RoleController@destroy');
     });
 
-    Route::prefix('permission')->middleware('auth:api')->group( function() {
+    Route::prefix('permission')->namespace('Acl')->middleware(['permission:acl-roles'])->group( function() {
         Route::get('/list/full', 'PermissionController@full');
         Route::get('/list/select', 'PermissionController@select');
     });

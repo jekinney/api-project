@@ -2,26 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Page;
 use Illuminate\Http\Request;
-use App\Http\Resources\Pages\{
-    PageResource,
-    PageCollection
-};
-use App\Http\Resources\MessageResource;
 
-class PageController extends Controller
+class SitePageController extends Controller
 {
-    protected $page;
-
-    /**
-    * Ensure a Page model is avalible
-    */
-    function __construct(Page $page)
-    {
-        $this->page = $page;
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -29,7 +13,7 @@ class PageController extends Controller
      */
     public function index()
     {
-        return new PageCollection( $this->page->list() );
+        //
     }
 
     /**
@@ -39,7 +23,7 @@ class PageController extends Controller
      */
     public function create()
     {
-        return response()->json( ['count' => $this->page->amount()] );
+        //
     }
 
     /**
@@ -50,40 +34,51 @@ class PageController extends Controller
      */
     public function store(Request $request)
     {
-        return new PageCollection( $this->page->store($request) );
+        //
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Page  $page
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Page $page)
+    public function show($id)
     {
-        return new PageResource( $page->show() );
+        //
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
-        return new PageResource( $page->renew($request) );
+        //
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Page  $page
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Page $page)
+    public function destroy($id)
     {
-        return new MessageResource( $page->remove() );
+        //
     }
 }

@@ -2,6 +2,11 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Acl\{
+    RoleResource,
+    PermissionResource
+};
+
 use Illuminate\Http\Resources\Json\Resource;
 
 class AuthUserResource extends Resource

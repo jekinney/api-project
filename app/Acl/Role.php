@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Acl;
 
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
@@ -16,7 +16,7 @@ class Role extends Model
     */
     public function users()
     {
-    	return $this->belongsToMany( User::class )->withTimestamps()->select( 'id', 'name', 'email' );
+    	return $this->belongsToMany( \App\User::class )->withTimestamps()->select( 'id', 'name', 'email' );
     }
 
     /**

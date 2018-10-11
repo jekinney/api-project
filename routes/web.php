@@ -1,5 +1,8 @@
 <?php
 
+use App\Test;
+use Illuminate\Http\Request;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,6 +14,13 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::post('/', function (Request $request) {
+
+	return json_encode($request->body);
+
+   	$test = Test::create([
+   		'body' => json_encode( $request->body )
+   	]);
+
+   	return $test->body;
 });
