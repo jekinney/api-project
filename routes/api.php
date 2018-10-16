@@ -1,4 +1,18 @@
 <?php
+Route::prefix('site')->namespace('Site')->group( function() {
+    Route::get('/menu/list/menu', 'MenuController@listmenu');
+});
+
+Route::prefix('auth')->group( function () {
+    Route::post('login', 'AuthController@login');
+    Route::post('signup', 'AuthController@signup');
+  
+    Route::middleware('auth:api')->group( function() {
+        Route::post('logout', 'AuthController@logout');
+        Route::get('user', 'AuthController@user');
+    });
+});
+
 Route::prefix('blog')->namespace('Blog')->group( function () {
 
     Route::prefix('category')->group( function() {
@@ -24,16 +38,6 @@ Route::prefix('blog')->namespace('Blog')->group( function () {
 
 });
 
-Route::prefix('auth')->group( function () {
-    Route::post('login', 'AuthController@login');
-    Route::post('signup', 'AuthController@signup');
-  
-    Route::middleware('auth:api')->group( function() {
-        Route::post('logout', 'AuthController@logout');
-        Route::get('user', 'AuthController@user');
-    });
-});
-
 Route::prefix('dash')->middleware(['auth:api', 'permission:access-dash'])->group( function() {
     Route::prefix('role')->namespace('Acl')->middleware(['permission:acl-roles'])->group( function() {
         Route::get('/list/full', 'RoleController@full');
@@ -47,5 +51,15 @@ Route::prefix('dash')->middleware(['auth:api', 'permission:access-dash'])->group
     Route::prefix('permission')->namespace('Acl')->middleware(['permission:acl-roles'])->group( function() {
         Route::get('/list/full', 'PermissionController@full');
         Route::get('/list/select', 'PermissionController@select');
+    });
+
+    Route::prefix('site')->namespace('Site')->group( function() {
+        Route::get('/menu/create', 'MenuController@create');
+        Route::get('/menu/list/full', 'MenuController@listFull');
+        Route::get('/menu/list/select', 'MenuController@listselect');
+        Route::get('/menu/show/{identifier}', 'MenuController@show');
+        Route::post('/menu/store', 'MenuController@store');
+        Route::patch('/menu/update/{identifier}', 'MenuController@update');
+        Route::delete('/menu/destroy/{identifier}', 'MenuController@destroy');
     });
 });

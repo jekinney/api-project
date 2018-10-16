@@ -45,7 +45,9 @@ class Menu extends Model
  	*/
  	public function menuList()
  	{
- 		return $this->groupBy( 'location' )->get( ['id', 'name'] );
+ 		$menus = $this->orderBy('position', 'asc')->get( ['id', 'name', 'location'] );
+
+        return $menus->groupBy( 'location' );
  	}
 
  	/**
@@ -68,6 +70,25 @@ class Menu extends Model
         return $this->where( 'location', $location )->count() + 1;
     }
 
+    /**
+    * Gather required data to create
+    * and update menu data
+    *
+    * @return object
+    */
+    public function createData()
+    {
+        $data['locations'] = ['top', 'left', 'bottom'];
+
+        $data['positions'] = [
+            'top' => $this->positionCount('top'), 
+            'left' => $this->positionCount('left'),
+            'bottom' => $this->positionCount('bottom'),
+        ];
+
+        return (object) $data;
+    }
+
  	/**
  	*
  	* @param \Illuminate\Http\Request $request
@@ -75,7 +96,7 @@ class Menu extends Model
  	*/
  	public function show($identifier)
  	{
-        return $this->findByIdentifier( $identifier );
+        return $this->findByIdentifier( $identifier )->load( 'pages' );
  	}
 
  	/**
