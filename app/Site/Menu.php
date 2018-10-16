@@ -22,7 +22,7 @@ class Menu extends Model
     *
     * @return \App\Site\Page 
     */
-    public function getActivePageAttribute()
+    public function getPageAttribute()
     {
     	return $this->pages()->where( 'is_active', 1 )->first();
     }
@@ -58,6 +58,16 @@ class Menu extends Model
  		return $this->get( ['id', 'name', 'location'] );
  	}
 
+    /**
+    * Position count
+    *
+    * @return int
+    */
+    public function positionCount($location)
+    {
+        return $this->where( 'location', $location )->count() + 1;
+    }
+
  	/**
  	*
  	* @param \Illuminate\Http\Request $request
@@ -65,7 +75,7 @@ class Menu extends Model
  	*/
  	public function show($identifier)
  	{
-
+        return $this->findByIdentifier( $identifier );
  	}
 
  	/**
@@ -75,7 +85,11 @@ class Menu extends Model
  	*/
  	public function store(Request $request)
  	{
+        $this->validateInput( $request );
 
+        $menu = $this->create( $this->setData($request) );
+
+        return $menu;
  	}
 
  	/**
@@ -91,8 +105,35 @@ class Menu extends Model
 
  		$menu->update( $this->setData($request) );
 
- 		return $menu->fresh()->load( 'roles' );
+ 		return $menu->fresh();
  	}
+
+    /**
+    * Set position from a drag and drop json array
+    *
+    * @param array | json $postion
+    */
+    public function updatePositions($positions)
+    {
+        // check if NOT an array, assume json then
+        if ( ! is_array($positions) ) {
+
+            $positions = json_decode( $positions, true );
+
+        }
+
+        foreach ( $positions as $position ) {
+
+            $menu = $this->findOrFail( $position['id'] );
+
+            $menu->update([
+                'position' => $position['position']
+            ]);
+
+        }
+
+        return true;
+    }
 
  	/**
  	* Perminatly remove menu item
@@ -102,7 +143,9 @@ class Menu extends Model
  	public function remove()
  	{
  		foreach( $this->pages as $page ) {
+
  			$page->update( ['menu_id' => null] );
+
  		}
 
  		return $this->delete();
@@ -131,7 +174,10 @@ class Menu extends Model
  	private function setData(Request $request)
  	{
  		return [
-
+            'name' => $request->name,
+            'slug' => str_slug( $request->name ),
+            'location' => $request->location,
+            'position' => $request->position,
  		];
  	}
 
@@ -141,21 +187,19 @@ class Menu extends Model
  	* @param \Illuminate\Http\Request $request
  	* @return \Illuminate\Http\Request
  	*/
- 	private function validateInput(Request $request)
+ 	private function validateInput(Request $request, $id = null)
  	{
  		$rules = [
-
+            'name' => 'required|string|unique:menus,name',
+            'location' => 'required|string|in:top,left,right,bottom',
+            'position' => 'required|numeric',
  		];
 
- 		if ( $request->isMethod('post') ) {
+ 		if ( $request->isMethod('patch') && $id ) {
 
+            $rules['name'] .= ','. $id;
 
-
- 		} else {
-
-
-
- 		}
+ 		} 
 
  		return $request->validate( $rules );
  	}
