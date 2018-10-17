@@ -1,6 +1,7 @@
 <?php
 Route::prefix('site')->namespace('Site')->group( function() {
     Route::get('/menu/list/menu', 'MenuController@listmenu');
+    Route::get('/page/show/{identifier}', 'PageController@show');
 });
 
 Route::prefix('auth')->group( function () {
@@ -53,13 +54,22 @@ Route::prefix('dash')->middleware(['auth:api', 'permission:access-dash'])->group
         Route::get('/list/select', 'PermissionController@select');
     });
 
-    Route::prefix('site')->namespace('Site')->group( function() {
-        Route::get('/menu/create', 'MenuController@create');
-        Route::get('/menu/list/full', 'MenuController@listFull');
-        Route::get('/menu/list/select', 'MenuController@listselect');
-        Route::get('/menu/show/{identifier}', 'MenuController@show');
-        Route::post('/menu/store', 'MenuController@store');
-        Route::patch('/menu/update/{identifier}', 'MenuController@update');
-        Route::delete('/menu/destroy/{identifier}', 'MenuController@destroy');
+    Route::prefix('site/menu')->namespace('Site')->middleware(['permission:site-menu'])->group( function() {
+        Route::get('/create', 'MenuController@create');
+        Route::get('/list/full', 'MenuController@listFull');
+        Route::get('/list/select', 'MenuController@listselect');
+        Route::get('/show/{identifier}', 'MenuController@show');
+        Route::post('/store', 'MenuController@store');
+        Route::patch('/update/{identifier}', 'MenuController@update');
+        Route::delete('/destroy/{identifier}', 'MenuController@destroy');
+    });
+
+    Route::prefix('site/page')->namespace('Site')->middleware(['permission:site-menu'])->group( function() {
+        Route::get('/list/full', 'PageController@listFull');
+        Route::get('/list/select', 'PageController@listselect');
+        Route::get('/edit/{identifier}', 'PageController@edit');
+        Route::post('/store', 'PageController@store');
+        Route::patch('/update/{identifier}', 'PageController@update');
+        Route::delete('/destroy/{identifier}', 'PageController@destroy');
     });
 });

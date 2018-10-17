@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Permission extends Model
 {
+    ///// Setup and override
+    
 	/**
 	* Guarded columns from mass assignment
 	*

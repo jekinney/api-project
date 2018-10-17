@@ -29,6 +29,8 @@ class AclSeeder extends Seeder
         	['slug' => 'blog-categories', 'name' => 'Blog Categories', 'description' => 'Can manage blog categories.'],
         	['slug' => 'blog-articles', 'name' => 'Blog Articles', 'description' => 'Can manage blog ALL blog articles.'],
         	['slug' => 'blog-author', 'name' => 'Blog Author', 'description' => 'Can author and update their own blog articles'],
+            ['slug' => 'site-menu', 'name' => 'Site Menu', 'description' => 'Manage the sites menus'],
+            ['slug' => 'site-page', 'name' => 'Site Page', 'description' => 'Manage sites static pages and content'],
         ];
 
 
