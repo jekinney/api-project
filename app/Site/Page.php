@@ -3,10 +3,10 @@
 namespace App\Site;
 
 use Carbon\Carbon;
+use App\Helpers\Models;
 use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\Model;
 
-class Page extends Model
+class Page extends Models
 {
 	///// Setup and overides
 
@@ -24,13 +24,6 @@ class Page extends Model
 	* @var array
 	*/
 	protected $dates = ['activate_at', 'deactivate_at'];
-
-	/**
-	* Guarded columns from mass assignment
-	*
-	* @var array
-	*/
-    protected $guarded = [];
     
     /**
     * Relationship to menu model
@@ -52,13 +45,17 @@ class Page extends Model
     	return $this->with( 'menu' )->latest()->get();
     }
 
-
+    /**
+    * Activate pages that are set with an activated date
+    *
+    * @return boolean
+    */
     public function activate()
     {
     	$now = Carbon::now();
 
     	// Grab pages that are needing to be activated
-    	$pages = $this->where( 'activate_at', '<', $now )->where( 'is_active', false )->get()
+    	$pages = $this->where( 'activate_at', '<', $now )->where( 'is_active', false )->get();
 
     	if ( $pages->isNotEmpty() ) {
 
@@ -69,7 +66,7 @@ class Page extends Model
     			if ( is_null( $page->deactivate_at ) || $page->deactivate_at > $now) {
 
     				// Check and deactivate any active pages per menu item
-    				$active = $this->where( 'menu_id', $page->menu_id )->where( 'is_active' 1 )->first();
+    				$active = $this->where( 'menu_id', $page->menu_id )->where( 'is_active', true )->first();
 
     				if ( $active->isNotEmpty() ) {
 
@@ -96,7 +93,9 @@ class Page extends Model
     */
     public function show($identifier)
     {
-    	return $this->findByIdentifier( $identifier );
+    	$page = $this->findByIdentifier( $identifier );
+
+    	return $page->only('content');
     }
 
     /**
@@ -120,7 +119,9 @@ class Page extends Model
     {
     	$this->validateInput( $request );
 
-    	return $this->create( $this->setData($request) );
+    	$page = $this->create( $this->setData($request) );
+
+    	return $page;
     }
 
     /**
@@ -133,7 +134,7 @@ class Page extends Model
     {
     	$page = $this->findByIdentifier( $request->identifier );
 
-    	$this->validateInput( $request );
+    	$this->validateInput( $request, $page->id );
 
     	$page->update( $this->setData($request) );
 
@@ -162,11 +163,13 @@ class Page extends Model
     private function setData(Request $request)
     {
     	return [
+    		'name' => $request->name,
+    		'slug' => str_slug( $request->name ),
     		'menu_id' => $request->menu_id,
     		'content' => json_encode( $request->content ),
     		'is_active' => $request->is_active? true:false,
     		'activate_at' => $request->activate_at? Carbon::parse( $request->activate_at ):null,
-    		'deactivate_at' => $request->deactivate_at Carbon::parse( $request->deactivate_at ):null,
+    		'deactivate_at' => $request->deactivate_at? Carbon::parse( $request->deactivate_at ):null,
     	];
     }
 
@@ -176,9 +179,10 @@ class Page extends Model
     * @param \Illuminate\Http\Request $request
     * @return \Illuminate\Http\Request
     */
-    private function validateInput(Request $request)
+    private function validateInput(Request $request, $id = null)
     {
     	$rules = [
+    		'name' => 'required|string|unique:pages,name',
     		'menu_id' => 'required|numeric|exists:menus,id',
     		'content' => 'required|string',
     		'is_active' => 'boolean',
@@ -186,18 +190,11 @@ class Page extends Model
     		'deactivate_at' => 'date',
     	];
 
+    	if ( $request->isMethod('patch') ) {
+
+    		$rules['name'] .= ','. $id;
+    	}
+
     	return $request->validate( $rules );
     }
-
-    /**
-    * Find a row by either id or slug
-    *
-    * @param mixed $identifier
-    * @return Model
-    */
-    private function findByIdentifier($identifier)
-    {
-    	return $this->where( 'id', $identifier )->orWhere( 'slug', $identifier )->first();
-    }
-
 }

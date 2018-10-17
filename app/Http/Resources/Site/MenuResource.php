@@ -20,10 +20,9 @@ class MenuResource extends Resource
             'slug' => $this->when( $this->slug, $this->slug ),
             'position' => $this->when( $this->position, $this->position ),
             'location' => $this->when( $this->location, $this->location ),
-            'page_count' => $this->when( $this->pages_count, $this->pages_count ),
+            'pages_count' => $this->when( !is_null($this->pages_count), $this->pages_count ),
 
-            // 'page' => ,
-            // 'pages' => ,
+            'pages' => PageResource::collection( $this->whenLoaded('pages') ),
         ];
     }
 }

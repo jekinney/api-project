@@ -2,12 +2,12 @@
 
 namespace App\Site;
 
+use App\Helpers\Models;
 use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\Model;
 
-class Menu extends Model
+class Menu extends Models
 {
-    protected $guarded = [];
+    ///// Relationships
 
     /**
     * Get pages assigned to a menu item
@@ -22,12 +22,12 @@ class Menu extends Model
     *
     * @return \App\Site\Page 
     */
-    public function getPageAttribute()
+    public function page()
     {
-    	return $this->pages()->where( 'is_active', 1 )->first();
+    	return $this->hasMany( Page::class )->where( 'is_active', 1 );
     }
 
- 	///// Query
+ 	///// Queries
 
     /**
  	* Get a full list for admin
@@ -36,7 +36,11 @@ class Menu extends Model
  	*/
  	public function fullList()
  	{
- 		return $this->withCount( 'pages' )->orderBy( 'position', 'asc' )->get();
+ 		return $this->with(['pages' => function($q) {
+                    $q->select('id', 'name', 'menu_id', 'is_active', 'updated_at', 'created_at', 'activate_at', 'deactivate_at');
+                }])->withCount( 'pages' )
+                ->orderBy( 'position', 'asc' )
+                ->get();
  	}
 
  	/**
@@ -57,7 +61,8 @@ class Menu extends Model
  	*/
  	public function selectList()
  	{
- 		return $this->get( ['id', 'name', 'location'] );
+ 		return $this->orderBy( 'name', 'desc' )
+            ->get( ['id', 'name', 'location'] );
  	}
 
     /**
@@ -170,18 +175,6 @@ class Menu extends Model
  		}
 
  		return $this->delete();
- 	}
-
- 	/**
- 	*
- 	* @param string $identifier
- 	* @return Model
- 	*/
- 	private function findByIdentifier($identifier)
- 	{
- 		return $this->where( 'id', $identifier )
- 				->orWhere( 'slug', $identifier )
- 				->firstOrFail();
  	}
 
  	///// Helpers

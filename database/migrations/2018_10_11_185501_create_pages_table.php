@@ -15,9 +15,11 @@ class CreatePagesTable extends Migration
     {
         Schema::create('pages', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('menu_id');
+            $table->integer('menu_id')->index();
+            $table->string('slug');
+            $table->string('name')->unique();
             $table->text('content');
-            $table->boolean('is_active');
+            $table->boolean('is_active')->default(false);
             $table->timestamp('activate_at')->nullable();
             $table->timestamp('deactivate_at')->nullable();
             $table->timestamps();
