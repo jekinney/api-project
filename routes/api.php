@@ -54,6 +54,15 @@ Route::prefix('dash')->middleware(['auth:api', 'permission:access-dash'])->group
         Route::get('/list/select', 'PermissionController@select');
     });
 
+    Route::prefix('user')->middleware(['permission:site-menu,acl-users,all'])->group( function() {
+        Route::get('/list/full', 'UserController@listFull');
+        Route::get('/list/select', 'UserController@listselect');
+        Route::get('/edit/{identifier}', 'UserController@edit');
+        Route::post('/store', 'UserController@store');
+        Route::patch('/update/{identifier}', 'UserController@update');
+        Route::delete('/destroy/{identifier}', 'UserController@destroy');
+    });
+
     Route::prefix('site/menu')->namespace('Site')->middleware(['permission:site-menu'])->group( function() {
         Route::get('/create', 'MenuController@create');
         Route::get('/list/full', 'MenuController@listFull');
